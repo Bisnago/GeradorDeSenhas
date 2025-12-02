@@ -1,0 +1,95 @@
+import java.util.Random;
+import java.util.Scanner;
+import java.io.PrintStream;
+
+class GeradorSenha {
+
+    private String caracteres;
+    private int tamanho;
+    private Random random;
+
+    public GeradorSenha(int nivel, int tamanho) {
+
+        this.tamanho = tamanho;
+        this.random = new Random();
+
+        switch (nivel) {
+            case 1:
+                this.caracteres = "0123456789";
+                break;
+
+            case 2:
+                this.caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                break;
+
+            case 3:
+                this.caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*()-_=+[]{}/?<>;:";
+                break;
+
+            default:
+                throw new IllegalArgumentException("Nível inválido! Escolha 1, 2 ou 3.");
+        }
+    }
+
+    public String gerarSenha() {
+        StringBuilder senha = new StringBuilder();
+
+        for (int i = 0; i < tamanho; i++) {
+            int index = random.nextInt(caracteres.length());
+            senha.append(caracteres.charAt(index));
+        }
+
+        return senha.toString();
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+
+        System.setOut(new PrintStream(System.out, true, "UTF-8"));
+        Scanner sc = new Scanner(System.in, "UTF-8");
+
+        System.out.println("-------- Gerador de Senhas --------");
+        System.out.println("1 - Fácil (apenas números)");
+        System.out.println("2 - Médio (letras e números)");
+        System.out.println("3 - Difícil (letras, números e símbolos)");
+
+        System.out.print("Escolha o nível: ");
+        int nivel = sc.nextInt();
+
+        if (nivel < 1 || nivel > 3) {
+            System.out.println("Nível de dificuldade inválido! Encerrando o programa.");
+            return;
+        }
+        // VALIDAÇÃO DO TAMANHO
+        int tamanho;
+        while (true) {
+
+            System.out.print("Tamanho da senha: ");
+            tamanho = sc.nextInt();
+
+            if (tamanho < 12) {
+                System.out.println("\nRecomendamos que escolha pelo menos 12 caracteres de comprimento ou mais para uma senha forte.");
+                System.out.print("Tem certeza que gostaria de continuar? (S/N): ");
+                sc.nextLine(); // limpar buffer
+                String resposta = sc.nextLine().trim().toUpperCase();
+
+                if (resposta.equals("S")) {
+                    break; // continua mesmo assim
+                } else {
+                    System.out.println("Ok, escolha um novo tamanho!");
+                }
+
+            } else {
+                break; // tamanho >= 12 → válido automaticamente
+            }
+        }
+
+        GeradorSenha gerador = new GeradorSenha(nivel, tamanho);
+
+        String senhaGerada = gerador.gerarSenha();
+
+        System.out.println("Senha gerada: " + senhaGerada);
+    }
+}
